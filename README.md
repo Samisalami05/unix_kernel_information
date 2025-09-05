@@ -15,7 +15,7 @@ Fork creates a new process by duplicating the process its called from. The new d
 Each process has a seperate memory space which eliminates allocations performed by a process interfering with other processes. When fork is called both processes have a identical memory space.
 
 #### Return:
-On sucess, returns the pid of the child process in the parent and returns 0 in the child.
+On success, returns the pid of the child process in the parent and returns 0 in the child.
 On failure, the parent return -1 and no child process is created. `errno` is set to indicate the error.
 
 Include: `<unistd.h`
