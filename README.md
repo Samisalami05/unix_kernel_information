@@ -46,6 +46,12 @@ int main() {
 }
 ```
 
+#### Output:
+```
+Child executing
+Parent executing
+```
+
 ### Execute
 
 ```c
