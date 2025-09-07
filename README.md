@@ -107,17 +107,40 @@ Parent executing
 
 Waits for status change in a child of the calling process and obtains information about the changed child. A state change can be: the child terminated, the hild was stopped by a signal or the child was resumed by a signal. If a child is terminated, wait releases the resources associated with the child. If wait is not called, the terminated child becomes a "zombie".
 
+If the `statloc` argument is not null, the status of the terminated process is stored in the passed in pointer. To ignore this, set it as null.
+
 Include: `<sys/wait.h>`
 
-```
+```c
 pid_t wait(int *statloc);      // Returns on child process terminated.
 pid_t waitpid(pid_t pid, int *statloc, int options);
 ```
 
-### Execute
+There are some macros given in `<sys/wait.h>` that can interpret the termination status.
 
 ```c
+WIFEXITED(status)        // True if the child terminated normally (by calling exit or returning from main()).
+WIFSIGNALED(status)      // True if the child process was terminated by a signal.
+WIFSTOPPED(status)       // True if the child was stopped by delivery a signal.
+WIFCONTINUED(status)     // True if the child process was resumed by delivery of SIGCONT.
+```
 
+### Execute
+
+Include: `<unistd.h>`
+
+```c
+int execl(const char *pathname, const char *arg0, ... /* (char *)0 */ );
+
+int execv(const char *pathname, char *const argv[]);
+
+int execle(const char *pathname, const char *arg0, ... /* (char *)0, char *const envp[] */ );
+
+int execve(const char *pathname, char *const argv[], char *const envp[]);
+
+int execlp(const char *filename, const char *arg0, ... /* (char *)0 */ );
+
+int execvp(const char *filename, char *const argv[]);
 ```
 
 ## Environmental variables
