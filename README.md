@@ -105,6 +105,15 @@ Parent executing
 
 ### Wait
 
+Waits for status change in a child of the calling process and obtains information about the changed child. A state change can be: the child terminated, the hild was stopped by a signal or the child was resumed by a signal. If a child is terminated, wait releases the resources associated with the child. If wait is not called, the terminated child becomes a "zombie".
+
+Include: `<sys/wait.h>`
+
+```
+pid_t wait(int *statloc);      // Returns on child process terminated.
+pid_t waitpid(pid_t pid, int *statloc, int options);
+```
+
 ### Execute
 
 ```c
