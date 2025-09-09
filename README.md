@@ -12,7 +12,7 @@ Include: `<stdio.h>`
 void perror(const char* s);   // Print a system error message
 ```
 
-#### Example
+#### Example:
 ```c
 #include <stdio.h>
 #include <unistd.h>
@@ -27,6 +27,8 @@ int main() {
 
 ### Open
 
+Include: `<fcntl.h>`
+
 ### Creat
 
 ### Close
@@ -37,15 +39,29 @@ int main() {
 
 ### Write
 
-Not buffered
+Writes bytes up to the `count` given from the buffer to the file given by the file descriptor `fd`. If the `count` is greater than SSIZE_MAX, the result can be unpredictable.
+
+Write is not buffered which means that it does not depend on flushing of a buffer. This can make it less performant compared to for example `printf()`.
+
+Include: `<unistd.h>`
+
+#### Returns:
+On success, returns the number of bytes written.
+On failure, returns -1. `errno` is set to indicate the error.
 
 ```c
+ssize_t write(int fd, const void buf[.count], size_t count);
+```
+
+#### Example:
+```c
+#include <stdio.h>
+#include <unistd.h>
 
 int main() {
   printf("print 1\n");
   write(STDOUT_FILENO, "print 2\n", 8);
 }
-
 ```
 
 #### Output:
@@ -104,6 +120,9 @@ int dup2(int oldfd, int newfd);
 
 #### Example:
 ```c
+#include <unistd.h>
+#include <fcntl.h>
+
 int main() {
   int fd;
 
@@ -260,6 +279,7 @@ void exit(int status);
 
 #### Example:
 ```c
+#include <stdio.h>
 #include <stdlib.h>
 
 int main() {
