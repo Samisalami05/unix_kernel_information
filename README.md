@@ -247,42 +247,61 @@ Usage: create a child process and set up the pipe tp the parent so that it can s
 * close parent read
 
 ```c
-int main(int argc, char* argv[]) {
-  int parent_to_child[2];
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-  pid_t pid;
-  int number, ret;
+#define READ_END 0
+#define WRITE_END 1
 
-  if (argc != 1) {
-    fprintf(stderr, "to few arguments\n");
-    exit(1);
-  }
+int main() {
+        int parent_to_child[2];
 
-  // Open pipe
-  if (pipe(parent_to_child) != 0) {
-    perror("pipe");
-  }
+        pid_t pid;
+        int number = 2;
 
-  pid = fork();
-  if (pid < 0) {
-    perror("fork");
-    exit(1);
-  }
-  else if (pid == 0) { // Child
-    int temp_num;
-    if (read(parent_to_child[READ_END], &temp_num, sizeof(int)) == -1) {
-      perror("read");
-      printf("recieved: %d\n", temp_num);
-    }
-    close(parent_to_child[READ_END]);
-  }
-  else {
-     // Write to child
-    write(parent_to_child[WRITE_END], &number, sizeof(int)) == -1) {
-      perror("write to child");
-      exit(1);
-    }
-  }
+        // Create a pipe
+        if (pipe(parent_to_child) != 0) {
+                perror("pipe");
+                return 1;
+        }
+
+        pid = fork();
+        switch (pid) {
+                case -1:
+                        perror("free");
+                        return 1;
+                case 0:
+                        // Read from parent
+                        int temp_num;
+                        if (read(parent_to_child[READ_END], &temp_num, sizeof(int)) == -1) {
+                                perror("read");
+                                return 1;
+                        }
+
+                        printf("%d\n", temp_num);
+
+                        // Close the read end of the pipe
+                        close(parent_to_child[READ_END]);
+                        break;
+                default:
+                        // Write to child
+                        if (write(parent_to_child[WRITE_END], &number, sizeof(int)) == -1) {
+                                perror("write");
+                                return 1;
+                        }
+
+                        // Wait for the child to read the data
+                        int status;
+                        if (wait(&status) == -1) {
+                                perror("wait");
+                                return 1;
+                        }
+
+                        // Close the write end of the pipe
+                        close(parent_to_child[WRITE_END]);
+        }
 }
   
 ```
