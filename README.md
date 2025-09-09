@@ -158,7 +158,7 @@ struct stat {
     off_t     st_size;      // The size of the file
     blksize_t st_blksize;   // The block size for file system I/O
     blkcnt_t  st_blocks;    // The number of blocks allocated
-}
+};
 ```
 
 Include: `<sys/stat.h>`
