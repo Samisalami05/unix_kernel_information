@@ -255,6 +255,13 @@ Usage: create a child process and set up the pipe tp the parent so that it can s
 #define READ_END 0
 #define WRITE_END 1
 
+// Calls perror and closes the given pipe
+void perror_pipe(char* s, int* pipe) {
+        perror(s);
+        close(pipe[0]);
+        close(pipe[1]);
+}
+
 int main() {
         int parent_to_child[2];
 
@@ -270,38 +277,38 @@ int main() {
         pid = fork();
         switch (pid) {
                 case -1:
-                        perror("free");
+                        perror_pipe("free", parent_to_child);
                         return 1;
                 case 0:
                         // Read from parent
                         int temp_num;
                         if (read(parent_to_child[READ_END], &temp_num, sizeof(int)) == -1) {
-                                perror("read");
+                                perror_pipe("read", parent_to_child);
                                 return 1;
                         }
 
                         printf("%d\n", temp_num);
-
-                        // Close the read end of the pipe
-                        close(parent_to_child[READ_END]);
                         break;
                 default:
                         // Write to child
                         if (write(parent_to_child[WRITE_END], &number, sizeof(int)) == -1) {
-                                perror("write");
+                                perror_pipe("write", parent_to_child);
                                 return 1;
                         }
 
                         // Wait for the child to read the data
                         int status;
                         if (wait(&status) == -1) {
-                                perror("wait");
+                                perror_pipe("wait", parent_to_child);
                                 return 1;
                         }
-
-                        // Close the write end of the pipe
-                        close(parent_to_child[WRITE_END]);
         }
+
+        // Close the read end of the pipe
+        close(parent_to_child[READ_END]);
+
+        // Close the write end of the pipe
+        close(parent_to_child[WRITE_END]);
 }
   
 ```
