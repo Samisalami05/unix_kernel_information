@@ -28,6 +28,8 @@ int main() {
 
 ### Open
 
+Opens a file and returns a file descriptor.
+
 Include: `<fcntl.h>`
 
 ### Creat
