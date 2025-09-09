@@ -61,7 +61,23 @@ In the example write gets displayed first because it is not buffered while print
 ### File descriptors
 A file descriptor is 
 
-The files are stored in a process table where each file has a unique spot with flags, current file offset and v-node pointer which is called the file table. Files are often defined with a integer called a file descriptor which is used as a position in the process table. When a file is opened a file table and v-node is created. If two processes have the same file open and one of the processes close it, the file will still remain open for the other processes. When using open in two different processes each file descriptor will point to a different file table but both of the file tables will point to the same v-node. On clode in one of the processes the file table will be closed but the v-node will still be open because it was shared with another processes file table. When fork is called the parent and child use the same file table because the child gets a copy of the parent.
+The files are stored in a processes process table as a file table where each file has a unique spot with flags, current file offset and v-node pointer. Files are often defined with a integer called a file descriptor which is used as a position in the file table. When a file is opened a file table entry is opened and v-node is created.
+
+If two processes have the same file open and one of the processes close it, the file will still remain open for the other processes. When using open in two different processes each file descriptor will point to a different file table but both of the file tables will point to the same v-node. On close in one of the processes the file table will be closed but the v-node will still be open because it was shared with another processes file table. When fork is called the parent and child use the same file table because the child gets a copy of the parent.
+
+#### Process table entry (file table)
+| fd | flags | offset | v-node |
+|----|-------|--------|--------|
+| 0  |       |        |        |
+| 1  |       |        |        |
+| 2  |       |        |        |
+
+
+#### V-node
+| v-node info |
+|-------------|
+| i-node info |
+|  file size  |
 
 V-node:
 * v-node info
