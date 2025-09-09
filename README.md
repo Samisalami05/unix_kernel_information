@@ -8,12 +8,12 @@ Errno is a global variable that is set by functions supporting errno on failiure
 
 Include: `<stdio.h>`
 
-```
+```c
 void perror(const char* s);   // Print a system error message
 ```
 
 #### Example
-```
+```c
 #include <stdio.h>
 #include <unistd.h>
 
