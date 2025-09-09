@@ -109,6 +109,39 @@ Todo: write something here
 ```
 
 ### Stat
+Returns the information about a file. The information is stored in a struct `stat` which stores different data about the file.
+
+```c
+struct stat {
+  mode_t st_mode;	  // The permissions of the file
+  ino_t st_ino;	    // The inode of the file
+  dev_t st_dev;	    // The device the file is stored on.
+  uid_t st_uid;	    // The User ID of the file.
+  gid_t st_gid;	    // The Group ID of the file.
+
+  timespec st_atime;	  // The last time the file was accessed.
+  timespec st_ctime;	  // The last time the file's permission was changed.
+  timespec st_mtime;	  // The last time the file was modified.
+
+  nlink_t st_nlink;	  // The number of links to the file.
+  off_t st_size;    // The size of the file
+  blksize_t st_blksize; // The block size for file system I/O
+  blkcnt_t st_blocks; // The number of blocks allocated
+```
+
+Include: `<sys/stat.h>`
+
+#### Return:
+On success, returns 0.
+On Failure, returns -1. `errno` is set appropriately
+
+```c
+int stat(const char *restrict path, struct stat *restrict statbuf);
+
+int fstat(int fd, struct stat *statbuf);
+
+int lstat(const char *restrict path, struct stat *restrict statbuf);
+```
 
 ### File types
 
