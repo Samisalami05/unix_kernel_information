@@ -127,6 +127,7 @@ struct stat {
   off_t st_size;    // The size of the file
   blksize_t st_blksize; // The block size for file system I/O
   blkcnt_t st_blocks; // The number of blocks allocated
+}
 ```
 
 Include: `<sys/stat.h>`
@@ -224,6 +225,39 @@ Parent executing
 
 ### Exit
 
+Causes normal process termination and returns a given status to the parent. All open stdio streams are flushed and closed.
+
+The status can be given by these macros:
+```
+EXIT_SUCCESS
+EXIT_FAILURE
+```
+
+Include: `<stdlib.h>`
+
+#### Return:
+Nothing
+
+```c
+void exit(int status);
+```
+
+#### Example
+```c
+#include <stdlib.h>
+
+int main() {
+  exit(EXIT_SUCCESS);
+  printf("This should not print\n");
+}
+```
+
+#### Output
+```
+
+```
+
+In the example the main function is exited before the `printf()` so nothing is displayed.
 
 ### Wait
 
