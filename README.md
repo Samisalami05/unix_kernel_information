@@ -46,6 +46,8 @@ int main() {
   write(STDOUT_FILENO, "print 2\n", 8);
 }
 
+```
+
 #### Output:
 ```
 print 2
@@ -53,8 +55,6 @@ print 1
 ```
 
 In the example write gets displayed first because it is not buffered while printf is. Printf's buffer is flushed at the end of main if not flushed by the user.
-
-```
 
 ## Files and Directories
 
