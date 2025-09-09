@@ -337,7 +337,9 @@ int execvp(const char *filename, char *const argv[]);
 
 Creates a connection where data can be sent between to file descriptors. The pipe ends can be closed with `close()`.
 
-Returns 0 on success, -1 on error. `errno` is set to indicate the error.
+Returns:
+On success, returns 0
+On failure, returns -1. `errno` is set to indicate the error.
 
 Include: `<unistd.h>`
 
