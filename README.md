@@ -19,6 +19,20 @@ Not buffered
 
 ## Files and Directories
 
+### File descriptors
+A file descriptor is 
+
+The files are stored in a process table where each file has a unique spot with flags, current file offset and v-node pointer which is called the file table. Files are often defined with a integer called a file descriptor which is used as a position in the process table. When a file is opened a file table and v-node is created. If two processes have the same file open and one of the processes close it, the file will still remain open for the other processes. When using open in two different processes each file descriptor will point to a different file table but both of the file tables will point to the same v-node. On clode in one of the processes the file table will be closed but the v-node will still be open because it was shared with another processes file table. When fork is called the parent and child use the same file table because the child gets a copy of the parent.
+
+`dup(int fd)` can duplicate a file descriptor.
+
+V-node:
+* v-node info
+* i-node info
+* current file size
+
+can be opened and closed with `open()` and `close()`.
+
 ### Stat
 
 ### File types
@@ -141,6 +155,61 @@ int execve(const char *pathname, char *const argv[], char *const envp[]);
 int execlp(const char *filename, const char *arg0, ... /* (char *)0 */ );
 
 int execvp(const char *filename, char *const argv[]);
+```
+
+### Pipe
+
+Creates a connection where data can be sent between to file descriptors. The pipe ends can be closed with `close()`.
+
+Returns 0 on success, -1 on error. `errno` is set to indicate the error.
+
+Include: `<unistd.h>`
+
+Usage: create a child process and set up the pipe tp the parent so that it can send data to the child.
+* call pipe()
+* do a fork to get child.
+* close childs write
+* close parent read
+
+```c
+int main(int argc, char* argv[]) {
+  int parent_to_child[2];
+
+  pid_t pid;
+  int number, ret;
+
+  if (argc != 1) {
+    fprintf(stderr, "to few arguments\n");
+    exit(1);
+  }
+
+  // Open pipe
+  if (pipe(parent_to_child) != 0) {
+    perror("pipe");
+  }
+
+  pid = fork();
+  if (pid < 0) {
+    perror("fork");
+    exit(1);
+  }
+  else if (pid == 0) { // Child
+    int temp_num;
+    if (read(parent_to_child[READ_END], &temp_num, sizeof(int)) == -1) {
+      perror("read");
+      printf("recieved: %d\n", temp_num);
+    }
+    close(parent_to_child[READ_END]);
+  }
+  else {
+     // Write to child
+    write(parent_to_child[WRITE_END], &number, sizeof(int)) == -1) {
+      perror("write to child");
+      exit(1);
+    }
+  }
+}
+  
 ```
 
 ## Environmental variables
