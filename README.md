@@ -81,7 +81,7 @@ The files are stored in a processes process table as a file table where each fil
 
 If two processes have the same file open and one of the processes close it, the file will still remain open for the other processes. When using open in two different processes each file descriptor will point to a different file table but both of the file tables will point to the same v-node. On close in one of the processes the file table will be closed but the v-node will still be open because it was shared with another processes file table. When fork is called the parent and child use the same file table because the child gets a copy of the parent.
 
-#### Process table entry (file table)
+#### Process table entry (file table):
 | fd | flags | offset | v-node |
 |----|-------|--------|--------|
 | 0  |       |        |        |
@@ -89,16 +89,11 @@ If two processes have the same file open and one of the processes close it, the 
 | 2  |       |        |        |
 
 
-#### V-node
+#### V-node:
 | v-node info |
 |-------------|
 | i-node info |
 |  file size  |
-
-V-node:
-* v-node info
-* i-node info
-* current file size
 
 can be opened and closed with `open()` and `close()`.
 
