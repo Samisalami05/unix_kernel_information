@@ -102,7 +102,7 @@ int dup(int oldfd);
 int dup2(int oldfd, int newfd);
 ```
 
-#### Example
+#### Example:
 ```c
 int main() {
   int fd;
@@ -119,7 +119,7 @@ int main() {
 }
 ```
 
-#### Output
+#### Output:
 ```
 Todo: write something here
 ```
@@ -258,7 +258,7 @@ Nothing
 void exit(int status);
 ```
 
-#### Example
+#### Example:
 ```c
 #include <stdlib.h>
 
@@ -268,7 +268,7 @@ int main() {
 }
 ```
 
-#### Output
+#### Output:
 ```
 
 ```
