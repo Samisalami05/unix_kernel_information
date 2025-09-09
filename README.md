@@ -18,11 +18,12 @@ void perror(const char* s);   // Print a system error message
 #include <unistd.h>
 
 int main() {
-  // Frok initializes errno on failiure
-  if (fork() == -1) {
-    perror("fork");
-    return 1;
-  }
+    // Frok initializes errno on failiure
+    if (fork() == -1) {
+        perror("fork");
+        return 1;
+    }
+}
 ```
 
 ### Open
@@ -59,8 +60,8 @@ ssize_t write(int fd, const void buf[.count], size_t count);
 #include <unistd.h>
 
 int main() {
-  printf("print 1\n");
-  write(STDOUT_FILENO, "print 2\n", 8);
+    printf("print 1\n");
+    write(STDOUT_FILENO, "print 2\n", 8);
 }
 ```
 
@@ -119,17 +120,17 @@ int dup2(int oldfd, int newfd);
 #include <fcntl.h>
 
 int main() {
-  int fd;
+    int fd;
+    
+    if ((fd = open("file", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) < 0) {
+        perror("open");
+        return 1;
+    }
 
-  if ((fd = open("file", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) < 0) {
-    perror("open");
-    return 1;
-  }
-
-  if (dup2(fd, STDOUT_FILENO) < 0) {
-    perror("dup2");
-    return 1;
-  }
+    if (dup2(fd, STDOUT_FILENO) < 0) {
+        perror("dup2");
+        return 1;
+    }
 }
 ```
 
@@ -143,20 +144,20 @@ Returns the information about a file. The information is stored in a struct `sta
 
 ```c
 struct stat {
-  mode_t st_mode;	  // The permissions of the file
-  ino_t st_ino;	    // The inode of the file
-  dev_t st_dev;	    // The device the file is stored on.
-  uid_t st_uid;	    // The User ID of the file.
-  gid_t st_gid;	    // The Group ID of the file.
+    mode_t    st_mode;	    // The permissions of the file
+    ino_t     st_ino;	    // The inode of the file
+    dev_t     st_dev;	    // The device the file is stored on.
+    uid_t     st_uid;	    // The User ID of the file.
+    gid_t     st_gid;	    // The Group ID of the file.
 
-  timespec st_atime;	  // The last time the file was accessed.
-  timespec st_ctime;	  // The last time the file's permission was changed.
-  timespec st_mtime;	  // The last time the file was modified.
+    timespec  st_atime;	    // The last time the file was accessed.
+    timespec  st_ctime;	    // The last time the file's permission was changed.
+    timespec  st_mtime;	    // The last time the file was modified.
 
-  nlink_t st_nlink;	  // The number of links to the file.
-  off_t st_size;    // The size of the file
-  blksize_t st_blksize; // The block size for file system I/O
-  blkcnt_t st_blocks; // The number of blocks allocated
+    nlink_t   st_nlink;	    // The number of links to the file.
+    off_t     st_size;      // The size of the file
+    blksize_t st_blksize;   // The block size for file system I/O
+    blkcnt_t  st_blocks;    // The number of blocks allocated
 }
 ```
 
@@ -232,18 +233,18 @@ pid_t fork(void);
 #include <stdio.h>
 
 int main() {
-  pid_t pid = fork();
+    pid_t pid = fork();
 
-  switch (pid) {
-    case -1: // Failure
-      perror("fork");
-      return 1;
-    case 0: // Child process
-      puts("Child executing");
-      break;
-    default: // Parent process
-      puts("Parent executing");
-  }
+    switch (pid) {
+        case -1: // Failure
+            perror("fork");
+            return 1;
+        case 0: // Child process
+            puts("Child executing");
+            break;
+        default: // Parent process
+            puts("Parent executing");
+    }
 }
 ```
 
@@ -278,8 +279,8 @@ void exit(int status);
 #include <stdlib.h>
 
 int main() {
-  exit(EXIT_SUCCESS);
-  printf("This should not print\n");
+    exit(EXIT_SUCCESS);
+    printf("This should not print\n");
 }
 ```
 
@@ -355,58 +356,58 @@ Usage: create a child process and set up the pipe tp the parent so that it can s
 
 // Calls perror and closes the given pipe
 void perror_pipe(char* s, int* pipe) {
-        perror(s);
-        close(pipe[0]);
-        close(pipe[1]);
+    perror(s);
+    close(pipe[0]);
+    close(pipe[1]);
 }
 
 int main() {
-        int parent_to_child[2];
+    int parent_to_child[2];
 
-        pid_t pid;
-        int number = 2;
+    pid_t pid;
+    int number = 2;
 
-        // Create a pipe
-        if (pipe(parent_to_child) != 0) {
-                perror("pipe");
+    // Create a pipe
+    if (pipe(parent_to_child) != 0) {
+        perror("pipe");
+        return 1;
+    }
+
+    pid = fork();
+    switch (pid) {
+        case -1:
+            perror_pipe("free", parent_to_child);
+            return 1;
+        case 0:
+            // Read from parent
+            int temp_num;
+            if (read(parent_to_child[READ_END], &temp_num, sizeof(int)) == -1) {
+                perror_pipe("read", parent_to_child);
                 return 1;
-        }
+            }
 
-        pid = fork();
-        switch (pid) {
-                case -1:
-                        perror_pipe("free", parent_to_child);
-                        return 1;
-                case 0:
-                        // Read from parent
-                        int temp_num;
-                        if (read(parent_to_child[READ_END], &temp_num, sizeof(int)) == -1) {
-                                perror_pipe("read", parent_to_child);
-                                return 1;
-                        }
+            printf("%d\n", temp_num);
+            break;
+        default:
+            // Write to child
+            if (write(parent_to_child[WRITE_END], &number, sizeof(int)) == -1) {
+                perror_pipe("write", parent_to_child);
+                return 1;
+            }
 
-                        printf("%d\n", temp_num);
-                        break;
-                default:
-                        // Write to child
-                        if (write(parent_to_child[WRITE_END], &number, sizeof(int)) == -1) {
-                                perror_pipe("write", parent_to_child);
-                                return 1;
-                        }
+            // Wait for the child to read the data
+            int status;
+            if (wait(&status) == -1) {
+                perror_pipe("wait", parent_to_child);
+                return 1;
+            }
+    }
 
-                        // Wait for the child to read the data
-                        int status;
-                        if (wait(&status) == -1) {
-                                perror_pipe("wait", parent_to_child);
-                                return 1;
-                        }
-        }
+    // Close the read end of the pipe
+    close(parent_to_child[READ_END]);
 
-        // Close the read end of the pipe
-        close(parent_to_child[READ_END]);
-
-        // Close the write end of the pipe
-        close(parent_to_child[WRITE_END]);
+    // Close the write end of the pipe
+    close(parent_to_child[WRITE_END]);
 }
   
 ```
