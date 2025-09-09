@@ -3,6 +3,28 @@ The kernel is the core of an operating system which utilizes kernel subsystems l
 
 ## I/O functions
 
+### Errno
+Errno is a global variable that is set by functions supporting errno on failiure. Errno stores valuable debug information as a error code. Errno should not be accessed directly but actually has helper functions to use it.
+
+Include: `<stdio.h>`
+
+```
+void perror(const char* s);   // Print a system error message
+```
+
+#### Example
+```
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+  // Frok initializes errno on failiure
+  if (fork() == -1) {
+    perror("fork");
+    return 1;
+  }
+```
+
 ### Open
 
 ### Creat
@@ -17,6 +39,23 @@ The kernel is the core of an operating system which utilizes kernel subsystems l
 
 Not buffered
 
+```c
+
+int main() {
+  printf("print 1\n");
+  write(STDOUT_FILENO, "print 2\n", 8);
+}
+
+#### Output:
+```
+print 2
+print 1
+```
+
+In the example write gets displayed first because it is not buffered while printf is. Printf's buffer is flushed at the end of main if not flushed by the user.
+
+```
+
 ## Files and Directories
 
 ### File descriptors
@@ -24,14 +63,50 @@ A file descriptor is
 
 The files are stored in a process table where each file has a unique spot with flags, current file offset and v-node pointer which is called the file table. Files are often defined with a integer called a file descriptor which is used as a position in the process table. When a file is opened a file table and v-node is created. If two processes have the same file open and one of the processes close it, the file will still remain open for the other processes. When using open in two different processes each file descriptor will point to a different file table but both of the file tables will point to the same v-node. On clode in one of the processes the file table will be closed but the v-node will still be open because it was shared with another processes file table. When fork is called the parent and child use the same file table because the child gets a copy of the parent.
 
-`dup(int fd)` can duplicate a file descriptor.
-
 V-node:
 * v-node info
 * i-node info
 * current file size
 
 can be opened and closed with `open()` and `close()`.
+
+### Dup
+Duplicates a file descriptor.
+
+`dup(int oldfd)` can duplicate a file descriptor.
+
+#### Return:
+On success, returns the new file descriptor.
+On failure, returns -1 and `errno` is set to indicate the error.
+
+Include: `<unistd.h>`
+
+```c
+int dup(int oldfd);
+int dup2(int oldfd, int newfd);
+```
+
+#### Example
+```c
+int main() {
+  int fd;
+
+  if ((fd = open("file", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) < 0) {
+    perror("open");
+    return 1;
+  }
+
+  if (dup2(fd, STDOUT_FILENO) < 0) {
+    perror("dup2");
+    return 1;
+  }
+}
+```
+
+#### Output
+```
+Todo: write something here
+```
 
 ### Stat
 
@@ -214,5 +289,11 @@ int main(int argc, char* argv[]) {
 
 ## Environmental variables
 
+## Useful commands
+
+* `grep word_to_search *.c` - Searches all files in the current directory for the word `word_to_search` in all files ending with `.c`.
+* `tr "[a-z]" "[A-Z]" < srcfile > destfile` -
+* ``who | grep jacob | wc -l` - Counts how many "lines" with jacob gotten by who.
+  
 # Information
 All of the examples were developed in the programming language c and compiled with GNU c compiler.  in Ubuntu 24.04 LTS with Wsl. All of the c code was 
