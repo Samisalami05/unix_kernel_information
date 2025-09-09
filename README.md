@@ -261,7 +261,7 @@ Parent executing
 Causes normal process termination and returns a given status to the parent. All open stdio streams are flushed and closed.
 
 The status can be given by these macros:
-```
+```c
 EXIT_SUCCESS
 EXIT_FAILURE
 ```
