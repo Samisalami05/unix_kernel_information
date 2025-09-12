@@ -191,7 +191,7 @@ The common datatypes used for storing a id's are:
 * `pid_t` - A process id
 * `uid_t` - A user id
 * `gid_t` - A group id
-which are all included through `<sys/types.h>`. All of the datatypes are a signed integer type.
+which are all included through `<sys/types.h>`. All of the datatypes are of signed integer type.
 
 Every UNIX system has a implemenataion with a set of kernel processes that are used for operating the system functionalities. Below is a set of functions used for retrieving these process id's.
 
